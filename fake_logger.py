@@ -9,6 +9,15 @@ import argparse
 import pandas as pd
 from datetime import datetime
 
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+stream_handler = logging.StreamHandler()
+file_handler = logging.FileHandler("./fake.log")
+
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
+
 
 class FakeLogger(object):
     def __init__(self):
@@ -37,39 +46,28 @@ class FakeLogger(object):
         log = f"{user_ip} {rfc931} {user_id} {timezone} 'GET /{test_id}/{ass_id}' HTTP/1.0 200 1043"
         return log
 
-    def make_logs_chunk(self, user_num=10, log_cnt=1000):
-        chunk_logs = []
+    def make_log_chunks(self, user_num=10, log_cnt=1000):
         user_ips = list(set([self._get_user_ip() for _ in range(user_num)]))
 
         for _ in range(log_cnt):
             user_ip = random.choice(user_ips)
             ass_id = self._get_asssesment_item_id()
             test_id = self._get_asssesment_item_id()
-            chunk_logs.append(self._get_fake_log(user_ip, test_id, ass_id))
+            log = self._get_fake_log(user_ip, test_id, ass_id)
 
-            print(chunk_logs[-1])
+            logger.info(log)
+
             latency = random.randint(0, 2)
             time.sleep(latency)
-
-        return chunk_logs
 
 
 def main(args):
     #  config = open()
-
-    logger = logging.getLogger("fake")
-    file_handler = logging.FileHandler("fake.log")
-    logger.addHandler(file_handler)
-
     log_helper = FakeLogger()
 
     if args.type == "real_time":
         while True:
-            chunk_logs = log_helper.make_logs_chunk(user_num=10, log_cnt=1000)
-
-            for log in chunk_logs:
-                logger.info(log)
-
+            log_helper.make_log_chunks(user_num=10, log_cnt=1000)
             time.sleep(10)
 
     raise argparse.ArgumentError(f"{args.type}은 존재하지 않는 Type입니다.")
