@@ -284,3 +284,6 @@ pip-selfcheck.json
 
 .input/
 input/
+flask_serving/static/
+chapter9_practice
+chapter9_practice/
