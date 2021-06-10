@@ -8,7 +8,7 @@ from easydict import EasyDict
 import inference
 
 
-@bentoml.env(infer_pip_packages=True)  #(requirements_txt_file="./requirements.txt")
+@bentoml.env(infer_pip_packages=True)
 @bentoml.artifacts([PytorchModelArtifact('model'), PickleArtifact('test'), JSONArtifact('config'), \
     PickleArtifact('assessmentItemID_classes'), PickleArtifact('testId_classes'), PickleArtifact('KnowledgeTag_classes')]) 
 class PytorchDKT(bentoml.BentoService):
