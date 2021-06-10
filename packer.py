@@ -1,4 +1,4 @@
-from bento_DKT import PytorchDKT
+from service import PytorchDKT
 from args import parse_args
 
 import os

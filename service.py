@@ -1,10 +1,10 @@
 import bentoml
-from bentoml import artifact
 from bentoml.frameworks.pytorch import PytorchModelArtifact
-from bentoml.artifact import PickleArtifact, JSONArtifact
+from bentoml.service.artifacts.common import PickleArtifact, JSONArtifact
 from bentoml.adapters import JsonInput
 
 from easydict import EasyDict
+
 import inference
 
 
@@ -52,4 +52,3 @@ class PytorchDKT(bentoml.BentoService):
         print('* score : \n', score)
 
         return score
-        
