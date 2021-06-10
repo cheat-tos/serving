@@ -109,5 +109,5 @@ bento_dkt.pack('assessmentItemID_classes', assessment_class)
 bento_dkt.pack('testId_classes', test_class)
 bento_dkt.pack('KnowledgeTag_classes', tag_class)
 
-saved_path = bento_dkt.save()
+saved_path = bento_dkt.save() # develop : in local / production : in object storage service
 print(saved_path)
