@@ -21,5 +21,7 @@ def get_score():
 
     return str(score)
 
+# TODO Retrain by API request? or Cron Job by Airflow?
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=6006, debug=True)
