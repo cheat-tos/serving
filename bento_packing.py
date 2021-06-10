@@ -1,17 +1,12 @@
+from bento_DKT import PytorchDKT
+from args import parse_args
+
+import os
+import numpy as np
+import pandas as pd
+
 import torch
 import torch.nn as nn
-import torch.nn.functional as F 
-import numpy as np
-import copy
-import math
-
-try:
-    from transformers.modeling_bert import BertConfig, BertEncoder, BertModel    
-except:
-    from transformers.models.bert.modeling_bert import BertConfig, BertEncoder, BertModel    
-
-
-
 
 class LSTM(nn.Module):
 
@@ -88,3 +83,31 @@ class LSTM(nn.Module):
 
         return preds
 
+
+args = parse_args(mode='train')
+
+assessment_class = np.load(os.path.join(args.asset_dir, 'assessmentItemID_classes.npy'))
+test_class = np.load(os.path.join(args.asset_dir, 'testId_classes.npy'))
+tag_class = np.load(os.path.join(args.asset_dir, 'KnowledgeTag_classes.npy'))
+
+args.n_questions = len(assessment_class)
+args.n_test = len(test_class)
+args.n_tag = len(tag_class)
+
+model_path = os.path.join(args.model_dir, f'{args.config}.pt')
+load_state = torch.load(model_path)
+model = LSTM(args)
+model.load_state_dict(load_state['state_dict'], strict=True)
+   
+test = pd.read_csv("questions.csv")
+
+bento_dkt = PytorchDKT()
+bento_dkt.pack('model', model)
+bento_dkt.pack('test', test)
+bento_dkt.pack('config', args)
+bento_dkt.pack('assessmentItemID_classes', assessment_class)
+bento_dkt.pack('testId_classes', test_class)
+bento_dkt.pack('KnowledgeTag_classes', tag_class)
+
+saved_path = bento_dkt.save()
+print(saved_path)

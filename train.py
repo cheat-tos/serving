@@ -5,8 +5,6 @@ from dkt import trainer
 import torch
 from dkt.utils import setSeeds
 import wandb
-
-
 def main(args):
     wandb.login()
     
@@ -20,7 +18,8 @@ def main(args):
     
     train_data, valid_data = preprocess.split_data(train_data)
     
-    wandb.init(project='dkt', config=vars(args))
+    wandb.init(project='bc_stage4_dkt', entity='doooom', config=vars(args))
+    wandb.run.name = args.config
     trainer.run(args, train_data, valid_data)
     
 
