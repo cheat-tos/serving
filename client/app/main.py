@@ -17,7 +17,6 @@ def get_score():
     print(data)
     res = requests.post(f'http://127.0.0.1:5000/predict', json= data) # Set BentoML serve port to 5000(default)
     score = res.text
-    print(score)
     score = int(float(score))
     print(score)
 

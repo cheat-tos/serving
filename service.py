@@ -7,6 +7,7 @@ from easydict import EasyDict
 import time
 from datetime import datetime
 import random
+import pandas as pd
 
 import inference
 
@@ -23,6 +24,16 @@ class PytorchDKT(bentoml.BentoService):
     def predict(self, data):
         # get config
         args = EasyDict(self.artifacts.config)
+        
+        # add new data into training dataset
+        additional_df = pd.read_csv(args.data_dir + 'additional_data.csv')
+        new_userID = list(additional_df.userID)[-1]+1 if len(additional_df)!=0 else 0
+        new_userdata = []
+        for d in data:
+            row = [new_userID, d['assess_id'], d['test_id'], d['answer'], d['timestamp'], d['tag']]
+            new_userdata.append(row)
+        additional_df = pd.concat([additional_df, pd.DataFrame(new_userdata, columns=additional_df.columns)], axis=0)
+        additional_df.to_csv(args.data_dir + 'additional_data.csv', index=False)
 
         # get label encoder list
         le = {}

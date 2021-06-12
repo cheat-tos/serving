@@ -288,3 +288,5 @@ wandb/
 wandb
 models
 models/
+data
+data/

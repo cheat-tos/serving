@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F 
 import numpy as np
-import copy
 import math
 
 try:
@@ -98,7 +97,6 @@ class LSTMATTN(nn.Module):
         self.drop_out = self.args.drop_out
 
         # Embedding 
-        # interaction은 현재 correct로 구성되어있다. correct(1, 2) + padding(0)
         self.embedding_interaction = nn.Embedding(3, self.hidden_dim//3)
         self.embedding_test = nn.Embedding(self.args.n_test + 1, self.hidden_dim//3)
         self.embedding_question = nn.Embedding(self.args.n_questions + 1, self.hidden_dim//3)
@@ -195,7 +193,6 @@ class Bert(nn.Module):
         self.n_layers = self.args.n_layers
 
         # Embedding 
-        # interaction은 현재 correct으로 구성되어있다. correct(1, 2) + padding(0)
         self.embedding_interaction = nn.Embedding(3, self.hidden_dim//3)
         self.embedding_test = nn.Embedding(self.args.n_test + 1, self.hidden_dim//3)
         self.embedding_question = nn.Embedding(self.args.n_questions + 1, self.hidden_dim//3)
@@ -363,8 +360,6 @@ class Saint(nn.Module):
         self.embedding_head = nn.Embedding(self.args.n_cols['head'] + 1, self.hidden_dim)
         self.embedding_mid = nn.Embedding(self.args.n_cols['mid'] + 1, self.hidden_dim)
         self.embedding_tail = nn.Embedding(self.args.n_cols['tail'] + 1, self.hidden_dim)
-
-        # self.embedding_time = nn.Embedding(self.args.n_cols['Timestamp'] + 1, self.hidden_dim)
         
         # encoder combination projection
         self.enc_comb_proj = nn.Linear(self.hidden_dim * (cate_size + cont_size -1), self.hidden_dim)
@@ -403,31 +398,16 @@ class Saint(nn.Module):
         return mask.masked_fill(mask==1, float('-inf'))
 
     def forward(self, input):
-        # test, question, tag, _, mask, interaction, _ = input
         test, question, tag, correct, mask, interaction, paperid, head, mid, tail, time, _ = input
-
-        
-        # def min_max(x, strs):
-        #     print(strs, " :", torch.min(x), torch.max(x))
-
-        # min_max(test, "test")
-        # min_max(question, "question")
-        # min_max(tag, "tag")
-        # min_max(paperid, "paperid")
-        # min_max(head, "head")
-        # min_max(mid, "mid")
-        # min_max(tail, "tail")
-        # min_max(time, "time")
 
         batch_size = interaction.size(0)
         seq_len = interaction.size(1)
 
-        # 신나는 embedding
+        # embedding
         # ENCODER
         embed_test = self.embedding_test(test)
         embed_question = self.embedding_question(question)
         embed_tag = self.embedding_tag(tag)
-
         embed_paper = self.embedding_paper(paperid)
         embed_head = self.embedding_head(head)
         embed_mid = self.embedding_mid(mid)
@@ -444,20 +424,14 @@ class Saint(nn.Module):
 
         embed_enc = self.enc_comb_proj(embed_enc)
         
-        # DECODER
-        # 넣으면 정보를 많이 주는 역할
-        # 논문만 봤을 땐 빠지는 게 맞을듯
-        # 논문 보고 저자 코드 확인하기   
+        # DECODER  
         embed_test = self.embedding_test(test)
         embed_question = self.embedding_question(question)
         embed_tag = self.embedding_tag(tag)
-
         embed_paper = self.embedding_paper(paperid)
         embed_head = self.embedding_head(head)
         embed_mid = self.embedding_mid(mid)
         embed_tail = self.embedding_tail(tail)
-        # embed_time = self.embedding_time(time)
-
 
         embed_interaction = self.embedding_interaction(interaction)
 
@@ -473,8 +447,6 @@ class Saint(nn.Module):
         embed_dec = self.dec_comb_proj(embed_dec)
 
         # ATTENTION MASK 생성
-        # encoder하고 decoder의 mask는 가로 세로 길이가 모두 동일하여
-        # 사실 이렇게 3개로 나눌 필요가 없다
         if self.enc_mask is None or self.enc_mask.size(0) != seq_len:
             self.enc_mask = self.get_mask(seq_len).to(self.device)
             
@@ -483,7 +455,6 @@ class Saint(nn.Module):
             
         if self.enc_dec_mask is None or self.enc_dec_mask.size(0) != seq_len:
             self.enc_dec_mask = self.get_mask(seq_len).to(self.device)
-            
   
         embed_enc = embed_enc.permute(1, 0, 2)
         embed_dec = embed_dec.permute(1, 0, 2)
@@ -502,7 +473,6 @@ class Saint(nn.Module):
         out = self.fc(out)
 
         preds = self.activation(out).view(batch_size, -1)
-        # preds = out.view(batch_size, -1)
 
         return preds
 
@@ -538,18 +508,14 @@ class LastQuery(nn.Module):
 
         # embedding combination projection
         self.comb_proj = nn.Linear((self.hidden_dim//3)*4, self.hidden_dim)
-
-        # 기존 keetar님 솔루션에서는 Positional Embedding은 사용되지 않습니다
-        # 하지만 사용 여부는 자유롭게 결정해주세요 :)
-        # self.embedding_position = nn.Embedding(self.args.max_seq_len, self.hidden_dim)
-        
+ 
         # Encoder
         self.query = nn.Linear(in_features=self.hidden_dim, out_features=self.hidden_dim)
         self.key = nn.Linear(in_features=self.hidden_dim, out_features=self.hidden_dim)
         self.value = nn.Linear(in_features=self.hidden_dim, out_features=self.hidden_dim)
 
         self.attn = nn.MultiheadAttention(embed_dim=self.hidden_dim, num_heads=self.args.n_heads)
-        self.mask = None # last query에서는 필요가 없지만 수정을 고려하여서 넣어둠
+        self.mask = None
         self.ffn = Feed_Forward_block(self.hidden_dim)      
 
         self.ln1 = nn.LayerNorm(self.hidden_dim)

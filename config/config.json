@@ -2,7 +2,7 @@
     "seed" : 42,
     "device" : "cpu",
 
-    "data_dir" : "/opt/ml/input/data/train_dataset",
+    "data_dir" : "data/",
     "asset_dir" : "asset/",
     "file_name" : "train_data.csv",
     "model_dir" : "models/",
