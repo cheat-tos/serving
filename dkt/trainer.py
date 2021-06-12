@@ -1,7 +1,4 @@
 import os
-import torch
-import numpy as np
-
 
 from .dataloader import get_loaders
 from .optimizer import get_optimizer
@@ -10,7 +7,6 @@ from .criterion import get_criterion
 from .metric import get_metric
 from .model import *
 
-import wandb
 
 def run(args, train_data, valid_data):
     train_loader, valid_loader = get_loaders(args, train_data, valid_data)

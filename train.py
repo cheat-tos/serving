@@ -2,7 +2,7 @@ import os
 import torch
 from dkt import trainer
 from dkt.utils import setSeeds
-from labeled_dataloader import Preprocess
+from dkt.dataloader import Preprocess
 from args import parse_args
 
 # import wandb
