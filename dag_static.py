@@ -17,7 +17,7 @@ default_args = {
 
 
 dag = DAG(
-    'static',
+    'dag_static',
     default_args=default_args,
     description='DKT workflow management',
     start_date=days_ago(0),
@@ -36,7 +36,7 @@ load = BashOperator(
 server = BashOperator(
     # 클라이언트사이드 페이지열기
     task_id='server',
-    bash_command='',x
+    bash_command='',
     dag=dag
 )
 

@@ -17,7 +17,7 @@ default_args = {
 
 
 dag = DAG(
-    'iter',
+    'dag_iter',
     default_args=default_args,
     description='DKT workflow management',
     start_date=days_ago(0),
@@ -46,14 +46,14 @@ retrain = BashOperator(
 
 packing = BashOperator(
     # 패키징
-    task_id='pack',
+    task_id='packing',
     bash_command='',
     dag=dag
 )
 
 drop_reload = BashOperator(
     # 기존의 컨테이너 내리기
-    task_id='drop',
+    task_id='drop_reload',
     bash_command='',
     dag=dag
 )
