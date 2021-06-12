@@ -9,7 +9,7 @@ need 3 terminals
     $ source run_server.sh
 ```
 
-> enter [client side page](127.0.0.1:6007)
+> enter [client side page](http://127.0.0.1:6007)
 
 <hr>
 
@@ -27,4 +27,4 @@ need 3 terminals
     $ source gui.sh
 ```
 
-> enter [server side page](127.0.0.1:6006)
+> enter [server side page](http://127.0.0.1:6006)
