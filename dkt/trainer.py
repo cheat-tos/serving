@@ -18,7 +18,6 @@ def run(args, train_data, valid_data):
 
     train_loader, valid_loader = get_loaders(args, train_data, valid_data)
 
-    
     # model save path 설정 (모든 핛브을 하나의 model.pt에 저장)
     model_dir = args.model_dir
     os.makedirs(model_dir, exist_ok=True)
@@ -45,12 +44,9 @@ def run(args, train_data, valid_data):
             
     model = get_model(args)
     optimizer = get_optimizer(model, args)
-    # print("optimizer lr 2: ", get_lr(optimizer))
     scheduler = get_scheduler(optimizer, args)
 
     # wandb.watch(model)
-
-    # print("optimizer lr 3: ", get_lr(optimizer))
 
     best_auc = -1
     early_stopping_counter = 0
@@ -64,7 +60,6 @@ def run(args, train_data, valid_data):
         ### VALID
         auc, acc,_ , _ = validate(valid_loader, model, args)
 
-        ### TODO: model save or early stopping
         # wandb.log({"epoch": epoch, "train_loss": train_loss, "train_auc": train_auc, "train_acc":train_acc,
         #           "valid_auc":auc, "valid_acc":acc, "learning_rate": get_lr(optimizer)})
         if auc > best_auc:
@@ -94,7 +89,6 @@ def run(args, train_data, valid_data):
 
 
 def train(train_loader, model, optimizer, args):
-    # scheduler = get_scheduler(optimizer, args)
 
     model.train()
 
@@ -108,16 +102,6 @@ def train(train_loader, model, optimizer, args):
 
         loss = compute_loss(preds, targets)
         update_params(loss, model, optimizer, args)
-
-        # print("learning rate: ", get_lr(optimizer))
-
-        # scheduler
-        # if args.scheduler == 'plateau':
-        #     scheduler.step(best_auc)
-        # else:
-        #     scheduler.step()
-
-        # wandb.log({"lr": get_lr(optimizer)})
 
         if step % args.log_steps == 0:
             print(f"Training steps: {step} Loss: {str(loss.item())}")
@@ -256,15 +240,6 @@ def process_batch(batch, args):
     interaction_mask[:, 0] = 0
     interaction = (interaction * interaction_mask).to(torch.int64)
 
-    # #  interaction을 임시적으로 correct를 한칸 우측으로 이동한 것으로 사용
-    # #    saint의 경우 decoder에 들어가는 input이다
-    # interaction = correct + 1 # 패딩을 위해 correct값에 1을 더해준다.
-    # interaction = interaction.roll(shifts=1, dims=1)
-    # interaction[:, 0] = 0 # set padding index to the first sequence
-    # interaction = (interaction * mask).to(torch.int64)
-
-    # print(interaction)
-    # exit()
     #  test_id, question_id, tag
     test = ((test + 1) * mask).to(torch.int64)
     question = ((question + 1) * mask).to(torch.int64)
