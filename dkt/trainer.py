@@ -1,19 +1,43 @@
 import os
 import torch
 import numpy as np
+from glob import glob
 
 
 from .dataloader import get_loaders
-from .optimizer import get_optimizer
+from .optimizer import get_optimizer, get_lr
 from .scheduler import get_scheduler
 from .criterion import get_criterion
 from .metric import get_metric
-from .model import *
+from .model import LSTM, LSTMATTN, Bert, Transformer, Saint, LastQuery
 
-import wandb
+# import wandb
 
 def run(args, train_data, valid_data):
+    print(args)
+
     train_loader, valid_loader = get_loaders(args, train_data, valid_data)
+
+    
+    # model save path 설정 (모든 핛브을 하나의 model.pt에 저장)
+    model_dir = args.model_dir
+    os.makedirs(model_dir, exist_ok=True)
+    save_name = "model.pt"
+    print("[saved model path] ", model_dir, "/", save_name)
+
+    # model save path 설정 (학습마다 모델 저장, model_0.pt)
+    # model_dir = os.path.join(args.model_dir, args.model)
+    # os.makedirs(model_dir, exist_ok=True)
+    # save_name = None
+    # model_number = glob(os.path.join(model_dir, "*"))
+    # if len(model_number) == 0:
+    #     save_name = "model_0.pt"
+    # else:
+    #     # model_number = [int(m.split(".")[0][-1]) for m in model_number]
+    #     model_number = [int(m.split(".")[0].split("_")[1]) for m in model_number]
+    #     model_number.sort()
+    #     save_name = "model_" + str(model_number[-1] + 1) + ".pt"
+    # print("[saved model path] ", args.model, "/", save_name)
     
     # only when using warmup scheduler
     args.total_steps = int(len(train_loader.dataset) / args.batch_size) * (args.n_epochs)
@@ -21,7 +45,12 @@ def run(args, train_data, valid_data):
             
     model = get_model(args)
     optimizer = get_optimizer(model, args)
+    # print("optimizer lr 2: ", get_lr(optimizer))
     scheduler = get_scheduler(optimizer, args)
+
+    # wandb.watch(model)
+
+    # print("optimizer lr 3: ", get_lr(optimizer))
 
     best_auc = -1
     early_stopping_counter = 0
@@ -37,26 +66,27 @@ def run(args, train_data, valid_data):
 
         ### TODO: model save or early stopping
         # wandb.log({"epoch": epoch, "train_loss": train_loss, "train_auc": train_auc, "train_acc":train_acc,
-        #           "valid_auc":auc, "valid_acc":acc})
+        #           "valid_auc":auc, "valid_acc":acc, "learning_rate": get_lr(optimizer)})
         if auc > best_auc:
             best_auc = auc
+
             # torch.nn.DataParallel로 감싸진 경우 원래의 model을 가져옵니다.
             model_to_save = model.module if hasattr(model, 'module') else model
             save_checkpoint({
                 'epoch': epoch + 1,
                 'state_dict': model_to_save.state_dict(),
                 },
-                args.model_dir, f'{args.config}.pt',
+                model_dir, save_name,
             )
             early_stopping_counter = 0
+
+            print(f"Save best AUC model! [{auc}]")
         else:
             early_stopping_counter += 1
             if early_stopping_counter >= args.patience:
                 print(f'EarlyStopping counter: {early_stopping_counter} out of {args.patience}')
                 break
-        print()
 
-        # scheduler
         if args.scheduler == 'plateau':
             scheduler.step(best_auc)
         else:
@@ -64,19 +94,30 @@ def run(args, train_data, valid_data):
 
 
 def train(train_loader, model, optimizer, args):
+    # scheduler = get_scheduler(optimizer, args)
+
     model.train()
 
     total_preds = []
     total_targets = []
     losses = []
     for step, batch in enumerate(train_loader):
-        input = process_batch(batch, args)
-        preds = model(input)
-        targets = input[3] # correct
-
+        inputs = process_batch(batch, args)
+        preds = model(inputs)
+        targets = inputs[3] # correct
 
         loss = compute_loss(preds, targets)
         update_params(loss, model, optimizer, args)
+
+        # print("learning rate: ", get_lr(optimizer))
+
+        # scheduler
+        # if args.scheduler == 'plateau':
+        #     scheduler.step(best_auc)
+        # else:
+        #     scheduler.step()
+
+        # wandb.log({"lr": get_lr(optimizer)})
 
         if step % args.log_steps == 0:
             print(f"Training steps: {step} Loss: {str(loss.item())}")
@@ -113,10 +154,10 @@ def validate(valid_loader, model, args):
     total_preds = []
     total_targets = []
     for step, batch in enumerate(valid_loader):
-        input = process_batch(batch, args)
+        inputs = process_batch(batch, args)
 
-        preds = model(input)
-        targets = input[3] # correct
+        preds = model(inputs)
+        targets = inputs[3] # correct
 
 
         # predictions
@@ -139,10 +180,9 @@ def validate(valid_loader, model, args):
     # Train AUC / ACC
     auc, acc = get_metric(total_targets, total_preds)
     
-    print(f'VALID AUC : {auc} ACC : {acc}')
+    print(f'VALID AUC : {auc} ACC : {acc}\n')
 
     return auc, acc, total_preds, total_targets
-
 
 
 def inference(args, test_data):
@@ -171,7 +211,7 @@ def inference(args, test_data):
             
         total_preds+=list(preds)
 
-    write_path = os.path.join(args.output_dir, f"{args.config}.csv")
+    write_path = os.path.join(args.output_dir, args.output_name)
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)    
     with open(write_path, 'w', encoding='utf8') as w:
@@ -181,8 +221,6 @@ def inference(args, test_data):
             w.write('{},{}\n'.format(id,p))
 
 
-
-
 def get_model(args):
     """
     Load model and move tensors to a given devices.
@@ -190,6 +228,9 @@ def get_model(args):
     if args.model == 'lstm': model = LSTM(args)
     if args.model == 'lstmattn': model = LSTMATTN(args)
     if args.model == 'bert': model = Bert(args)
+    if args.model == 'transformer' : model = Transformer(args)
+    if args.model == 'saint' : model = Saint(args)
+    if args.model == 'query' : model = LastQuery(args)
     
 
     model.to(args.device)
@@ -200,25 +241,41 @@ def get_model(args):
 # 배치 전처리
 def process_batch(batch, args):
 
-    test, question, tag, correct, mask = batch
+    # test, question, tag, correct, mask = batch
+    correct, question, test, tag, paperid, head, mid, tail, time, mask = batch
     
     
     # change to float
     mask = mask.type(torch.FloatTensor)
     correct = correct.type(torch.FloatTensor)
 
-    #  interaction을 임시적으로 correct를 한칸 우측으로 이동한 것으로 사용
-    #    saint의 경우 decoder에 들어가는 input이다
+    # interaction을 임시적으로 correct를 한칸 우측으로 이동한 것으로 사용
     interaction = correct + 1 # 패딩을 위해 correct값에 1을 더해준다.
     interaction = interaction.roll(shifts=1, dims=1)
-    interaction[:, 0] = 0 # set padding index to the first sequence
-    interaction = (interaction * mask).to(torch.int64)
+    interaction_mask = mask.roll(shifts=1, dims=1)
+    interaction_mask[:, 0] = 0
+    interaction = (interaction * interaction_mask).to(torch.int64)
+
+    # #  interaction을 임시적으로 correct를 한칸 우측으로 이동한 것으로 사용
+    # #    saint의 경우 decoder에 들어가는 input이다
+    # interaction = correct + 1 # 패딩을 위해 correct값에 1을 더해준다.
+    # interaction = interaction.roll(shifts=1, dims=1)
+    # interaction[:, 0] = 0 # set padding index to the first sequence
+    # interaction = (interaction * mask).to(torch.int64)
+
     # print(interaction)
     # exit()
     #  test_id, question_id, tag
     test = ((test + 1) * mask).to(torch.int64)
     question = ((question + 1) * mask).to(torch.int64)
     tag = ((tag + 1) * mask).to(torch.int64)
+
+    # 추가된 feature
+    paperid = ((paperid + 1) * mask).to(torch.int64)
+    head = ((head + 1) * mask).to(torch.int64)
+    mid = ((mid + 1) * mask).to(torch.int64)
+    tail = ((tail + 1) * mask).to(torch.int64)
+    time = ((time + 1) * mask).to(torch.int64)
 
     # gather index
     # 마지막 sequence만 사용하기 위한 index
@@ -230,8 +287,6 @@ def process_batch(batch, args):
 
     test = test.to(args.device)
     question = question.to(args.device)
-
-
     tag = tag.to(args.device)
     correct = correct.to(args.device)
     mask = mask.to(args.device)
@@ -239,9 +294,15 @@ def process_batch(batch, args):
     interaction = interaction.to(args.device)
     gather_index = gather_index.to(args.device)
 
+    paperid = paperid.to(args.device)
+    head = head.to(args.device)
+    mid = mid.to(args.device)
+    tail = tail.to(args.device)
+    time = time.to(args.device)
+
     return (test, question,
             tag, correct, mask,
-            interaction, gather_index)
+            interaction, paperid, head, mid, tail, time, gather_index)
 
 
 # loss계산하고 parameter update!
@@ -277,7 +338,7 @@ def save_checkpoint(state, model_dir, model_filename):
 def load_model(args):
     
     
-    model_path = os.path.join(args.model_dir, f'{args.config}.pt')
+    model_path = os.path.join(args.model_dir, args.model, args.model_name)
     print("Loading Model from:", model_path)
     load_state = torch.load(model_path)
     model = get_model(args)
