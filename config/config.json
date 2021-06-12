@@ -26,7 +26,13 @@
 
     "log_steps" : 50,
 
-    "model" : "lstm",
+    "model" : "saint",
     "optimizer" : "adam",
-    "scheduler" : "plateau"
+    "scheduler" : "plateau",
+
+    "emb_size" : 100,
+    "scheduler_step" : 5,
+    "max_lr" : 1e-4,
+    "min_lr" : 1e-5,
+    "data_id" : "newID"
 }
