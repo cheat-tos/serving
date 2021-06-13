@@ -1,6 +1,7 @@
-version: '3'
+version: "3.7"
 
 services:
+
   client:
     image: kpic5014/dkt-client-flask
     container_name: dkt-client
@@ -8,11 +9,43 @@ services:
       - "80:6006"
     networks:
       - mentos
+
+  reverse-proxy:
+    image: traefik:v2.4
+    container_name: reverse-proxy
+    environment:
+      - TRAEFIK_ACCESSLOG=true
+    command:
+      - "--api.insecure=true"
+      - "--api.dashboard=true"
+      - "--api.debug=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.model.address=:80" # ! traefik listening port
+    ports:
+      - "7000:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+#      - ./reverse_proxy/traefik.toml:/traefik.toml
+    networks:
+      - mentos
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`traefik.dashboard`)" # ! route url to dashboard
+      - "traefik.http.routers.api.service=api@internal"
+
   inference:
     image: kpic5014/bento-dkt
-    container_name: dkt-inference-server
     ports:
-      - "5000:5000"
+      - "7000:5000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.inference.entrypoints=model"
+      - "traefik.http.routers.inference.rule=Host(`inference`)" # ! route url to bentodkt
+      - "traefik.http.services.client.loadbalancer.server.port=5000" # ! inference container listening port
+#      - "traefik.backend=inference"
+#      - "traefik.backend.healthcheck.path=/health"
+#      - "traefik.backend.healthcheck.interval=1s"
     networks:
       - mentos
 
