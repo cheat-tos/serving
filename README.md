@@ -1,30 +1,27 @@
-need 3 terminals
-
-<br>
-
-* terminal 1
-
-``` bash
-    $ source init.sh
-    $ source run_server.sh
-```
-
-> enter [client side page](http://127.0.0.1:6007)
-
-<hr>
-
-* terminal 2
+## How to run
 
 ```bash
-    $ source sch.sh
+  # install packages
+  $ sudo yum install git
+  $ sudo yum install docker
+  $ sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" \
+            -o /usr/local/bin/docker-compose
+  
+  # assign permission
+  $ sudo chmod +x /usr/local/bin/docker-compose
+  $ sudo usermod -aG docker $USER
+  $ newgrp docker
+  $ sudo systemctl restart docker
+  
+  # pull repo
+  $ git clone https://github.com/cheat-tos/serving.git
+  
+  # execute
+  $ cd serving
+  $ docker-compose up
 ```
 
-<hr>
-
-* terminal 3
-
-```bash
-    $ source gui.sh
+## envirment
 ```
-
-> enter [server side page](http://127.0.0.1:6006)
+system-release-2-13.amzn2.x86_64
+```
