@@ -5,10 +5,13 @@ from airflow.operators.bash import BashOperator
 from airflow.utils.dates import days_ago
 
 
+WORKING_DIRECTORY = "serving"
+CONFIG = "lstm"
+
 
 default_args = {
-    'owner': 'abc',
-    'email': ['abcabc@abc.com'],
+    'owner': 'mentos',
+    'email': ['mentos@example.com'],
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 2,
@@ -30,32 +33,36 @@ dag = DAG(
 dataload = BashOperator(
     # 새로운 데이터 받아오기
     task_id='dataload',
-    bash_command='python ${WORKING_DIRECTORY}/db_to_file.py',
+    bash_command=f'python {WORKING_DIRECTORY}/download_data.py', # 임의
+    dag=dag,
+)
+
+update_data = BashOperator(
+    # 새로운 데이터 추가하여 s3에 업로드하기
+    task_id='retrain',
+    bash_command=f'python {WORKING_DIRECTORY}/upload_s3.py',
     dag=dag,
 )
 
 retrain = BashOperator(
     # 재학습
     task_id='retrain',
-    bash_command='python ${WORKING_DIRECTORY}/dkt/train.py \
-                    --model_dir ${WORKING_DIRECTORY}/models \
-                    --asset_dir ${WORKING_DIRECTORY}/asset \
-                    --data_dir ${WORKING_DIRECTORY} --file_name data.csv',
+    bash_command=f'python {WORKING_DIRECTORY}/dkt/train.py --config {CONFIG}',
     dag=dag,
 )
 
 packing = BashOperator(
     # 패키징
     task_id='packing',
-    bash_command='',
+    bash_command=f'python {WORKING_DIRECTORY}/dkt/packer.py',
     dag=dag
 )
 
 drop_reload = BashOperator(
     # 기존의 컨테이너 내리기
     task_id='drop_reload',
-    bash_command='',
+    bash_command=f'docker-compose -f {WORKING_DIRECTORY}/docker-compose.yml up -d',
     dag=dag
 )
 
-dataload >> retrain >> packing >> drop_reload
+dataload >> update_data >> retrain >> packing >> drop_reload
