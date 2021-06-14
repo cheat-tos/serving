@@ -7,6 +7,7 @@ from sklearn.preprocessing import LabelEncoder
 import numpy as np
 import torch
 
+
 class Preprocess:
     def __init__(self, args, le=None):
         self.args = args
@@ -141,6 +142,7 @@ class Preprocess:
                     get_values(columns, r)
                 )
             )
+        
 
         return group.values
 
@@ -211,19 +213,18 @@ class DKTDataset(torch.utils.data.Dataset):
 
 from torch.nn.utils.rnn import pad_sequence
 
+
 def collate(batch):
     col_n = len(batch[0])
     col_list = [[] for _ in range(col_n)]
     max_seq_len = len(batch[0][-1])
 
-        
     # batch의 값들을 각 column끼리 그룹화
     for row in batch:
         for i, col in enumerate(row):
             pre_padded = torch.zeros(max_seq_len)
             pre_padded[-len(col):] = col
             col_list[i].append(pre_padded)  # padding을 앞에 추가?
-
 
     for i, _ in enumerate(col_list):
         col_list[i] = torch.stack(col_list[i])
@@ -235,14 +236,16 @@ def get_loaders(args, train, valid):
 
     pin_memory = True
     train_loader, valid_loader = None, None
-    
+
     if train is not None:
         trainset = DKTDataset(train, args)
         train_loader = torch.utils.data.DataLoader(trainset, num_workers=args.num_workers, shuffle=True,
-                            batch_size=args.batch_size, pin_memory=pin_memory, collate_fn=collate)
+                                                   batch_size=args.batch_size, pin_memory=pin_memory,
+                                                   collate_fn=collate)
     if valid is not None:
         valset = DKTDataset(valid, args)
-        valid_loader = torch.utils.data.DataLoader(valset, num_workers=0, shuffle=False,
-                            batch_size=args.batch_size, pin_memory=pin_memory, collate_fn=collate)
+        valid_loader = torch.utils.data.DataLoader(valset, num_workers=args.num_workers, shuffle=False,
+                                                   batch_size=args.batch_size, pin_memory=pin_memory,
+                                                   collate_fn=collate)
 
     return train_loader, valid_loader

@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  client:
+    image: kpic5014/dkt-client-flask
+    container_name: dkt-client
+    ports:
+      - "80:6006"
+    networks:
+      - mentos
+  inference:
+    image: kpic5014/bento-dkt
+    container_name: dkt-inference-server
+    ports:
+      - "5000:5000"
+    networks:
+      - mentos
+
+networks:
+  mentos:
+    driver: bridge

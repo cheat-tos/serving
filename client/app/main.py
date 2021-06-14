@@ -14,8 +14,7 @@ def index():
 @app.route('/get_score', methods=['POST'])
 def get_score():
     data = request.json
-    print(data)
-    res = requests.post(f'http://127.0.0.1:5000/predict', json= data) # Set BentoML serve port to 5000(default)
+    res = requests.post(f'http://dkt-inference-server:5000/predict', json= data) # Set BentoML serve port to 5000(default)
     score = res.text
     score = int(float(score))
     print(score)
