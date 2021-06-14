@@ -21,7 +21,7 @@ def run(args, train_data, valid_data):
     # model save path 설정 (모든 핛브을 하나의 model.pt에 저장)
     model_dir = args.model_dir
     os.makedirs(model_dir, exist_ok=True)
-    save_name = "model.pt"
+    save_name = f"{args.model}.pt"
     print("[saved model path] ", model_dir, "/", save_name)
 
     # model save path 설정 (학습마다 모델 저장, model_0.pt)

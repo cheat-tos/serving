@@ -5,8 +5,8 @@ from dkt.utils import setSeeds
 from dkt.dataloader import Preprocess
 from args import parse_args
 
-import boto3
-import pandas as pd
+
+
 
 # import wandb
 def main(args):
@@ -29,19 +29,5 @@ def main(args):
 
 if __name__ == "__main__":
     args = parse_args(mode='train')
-
-    # load training data from s3
-    os.makedirs(args.data_dir, exist_ok=True)
-    file_name = args.data_dir+'train_data.csv'
-    bucket = 'boostcamp-dkt-data'
-    key = 'train_dataset/train_data.csv'
-    client = boto3.client('s3') 
-    client.download_file(bucket, key, file_name)
-    # args.data_dir = '/opt/ml/input/data/train_dataset'
-
-    # set df for additional data
-    additional_df = pd.DataFrame([], columns=['userID', 'assessmentItemID', 'testId', 'answerCode', 'Timestamp', 'KnowledgeTag'])
-    additional_df.to_csv(args.data_dir+'additional_data.csv', index=False)
-
     os.makedirs(args.model_dir, exist_ok=True)
     main(args)

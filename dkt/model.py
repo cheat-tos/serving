@@ -19,15 +19,21 @@ class LSTM(nn.Module):
         self.hidden_dim = self.args.hidden_dim
         self.n_layers = self.args.n_layers
 
+        cate_size = len(self.args.cate_cols)
+        cont_size = len(self.args.cont_cols)
+
         # Embedding 
         # interaction은 현재 correct로 구성되어있다. correct(1, 2) + padding(0)
-        self.embedding_interaction = nn.Embedding(3, self.hidden_dim//3)
-        self.embedding_test = nn.Embedding(self.args.n_test + 1, self.hidden_dim//3)
-        self.embedding_question = nn.Embedding(self.args.n_questions + 1, self.hidden_dim//3)
-        self.embedding_tag = nn.Embedding(self.args.n_tag + 1, self.hidden_dim//3)
+        self.embedding_test = nn.Embedding(self.args.n_cols['testId'] + 1, self.hidden_dim)
+        self.embedding_question = nn.Embedding(self.args.n_cols['assessmentItemID'] + 1, self.hidden_dim)
+        self.embedding_tag = nn.Embedding(self.args.n_cols['KnowledgeTag'] + 1, self.hidden_dim)
+        self.embedding_paper = nn.Embedding(self.args.n_cols['paperID'] + 1, self.hidden_dim)
+        self.embedding_head = nn.Embedding(self.args.n_cols['head'] + 1, self.hidden_dim)
+        self.embedding_mid = nn.Embedding(self.args.n_cols['mid'] + 1, self.hidden_dim)
+        self.embedding_tail = nn.Embedding(self.args.n_cols['tail'] + 1, self.hidden_dim)
 
         # embedding combination projection
-        self.comb_proj = nn.Linear((self.hidden_dim//3)*4, self.hidden_dim)
+        self.comb_proj = nn.Linear(self.hidden_dim * (cate_size + cont_size -1), self.hidden_dim)
 
         self.lstm = nn.LSTM(self.hidden_dim,
                             self.hidden_dim,
@@ -56,22 +62,28 @@ class LSTM(nn.Module):
 
     def forward(self, input):
 
-        test, question, tag, _, mask, interaction, _ = input
+        test, question, tag, correct, mask, interaction, paperid, head, mid, tail, time, _ = input
 
         batch_size = interaction.size(0)
 
         # Embedding
 
-        embed_interaction = self.embedding_interaction(interaction)
         embed_test = self.embedding_test(test)
         embed_question = self.embedding_question(question)
         embed_tag = self.embedding_tag(tag)
+        embed_paper = self.embedding_paper(paperid)
+        embed_head = self.embedding_head(head)
+        embed_mid = self.embedding_mid(mid)
+        embed_tail = self.embedding_tail(tail)
         
 
-        embed = torch.cat([embed_interaction,
-                           embed_test,
-                           embed_question,
-                           embed_tag,], 2)
+        embed = torch.cat([embed_test,
+                               embed_question,
+                               embed_tag,
+                               embed_paper,
+                               embed_head,
+                               embed_mid,
+                               embed_tail], 2)
 
         X = self.comb_proj(embed)
 
