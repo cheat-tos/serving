@@ -64,10 +64,12 @@ mkdir airflow/dags
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
 # create user
+# default username : admin
+# default password : 1234
 airflow users create --username admin --firstname John --lastname Doe --password 1234 --role Admin --email Johndoe@example.com
 
 # copy custom dag
-cp /root/serving/dag_iter.py /root/airflow/dags
+cp /root/serving/dag_iter.py /root/airflow/dags/
 
 # run scheldurer
 airflow scheduler -D \
@@ -84,5 +86,5 @@ airflow webserver -p 8080 -D \
 
 # for docker
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-cd serving
-#source service-init.sh
+cd /root/serving
+source service-init.sh

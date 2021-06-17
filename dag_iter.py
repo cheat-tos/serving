@@ -30,31 +30,31 @@ dag = DAG(
     max_active_runs=1
 )
 
-dataload = BashOperator(
+load_data = BashOperator(
     # 새로운 데이터 받아오기
-    task_id='dataload',
-    bash_command=f'python3 {WORKING_DIRECTORY}/download_data.py', # 임의
+    task_id='load_data',
+    bash_command=f'python3 /root/{WORKING_DIRECTORY}/data/load_data.py', # 임의
     dag=dag,
 )
 
 update_data = BashOperator(
     # 새로운 데이터 추가하여 s3에 업로드하기
-    task_id='upload_data',
-    bash_command=f'python3 {WORKING_DIRECTORY}/upload_s3.py',
+    task_id='update_data',
+    bash_command=f'python3 /root/{WORKING_DIRECTORY}/data/update_data.py',
     dag=dag,
 )
 
 retrain = BashOperator(
     # 재학습
     task_id='retrain',
-    bash_command=f'python3 {WORKING_DIRECTORY}/dkt/train.py --config {CONFIG}',
+    bash_command=f'python3 /root/{WORKING_DIRECTORY}/dkt/train.py --config {CONFIG}',
     dag=dag,
 )
 
 packing = BashOperator(
     # 패키징
     task_id='packing',
-    bash_command=f'python3 {WORKING_DIRECTORY}/dkt/packer.py',
+    bash_command=f'python3 /root/{WORKING_DIRECTORY}/packer.py',
     dag=dag
 )
 
@@ -70,4 +70,4 @@ rolling_update = BashOperator(
     dag=dag
 )
 
-dataload >> update_data >> retrain >> packing >> rolling_update
+load_data >> update_data >> retrain >> packing >> rolling_update
