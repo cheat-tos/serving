@@ -14,6 +14,6 @@ docker service ls
 #docker service update \
 #  --update-parallelism 1 \
 #  --update-delay 10s \
-#  --image kpic5014/dkt-client-flask:latest \
+#  --image kpic5014/bento-dkt:latest \
 #  --detach=false \
 #  dkt-service_client
