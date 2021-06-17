@@ -6,7 +6,7 @@ from easydict import EasyDict
 def parse_args(mode='train'):
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--config', type=str, default='config')
+    parser.add_argument('--config', type=str, default='lstm')
     args_config = parser.parse_args()
 
     args = EasyDict()

@@ -16,12 +16,14 @@ def main(args):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     args.device = device
 
+    print(f"MODEL : {args.config}")
+
     preprocess = Preprocess(args)
     preprocess.load_train_data(args.file_name)
     train_data = preprocess.get_train_data()
-    
+
     train_data, valid_data = preprocess.split_data(train_data)
-    
+
     # wandb.init(project='', entity='', config=vars(args))
     # wandb.run.name = args.config
     trainer.run(args, train_data, valid_data)
