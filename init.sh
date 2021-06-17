@@ -1,11 +1,15 @@
+# THIS IS NCP SERVER SETTING.
+# YOU SHOULD CHANGE DETAILS IF YOU WANT TO USE THIS IN OTHER CLOUD SERVICES.
+
 # install packages
-sudo yum -y install git
-sudo yum -y install docker
+sudo apt-get -y install git
+sudo apt-get -y install docker
 sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" \
             -o /usr/local/bin/docker-compose
+
 sudo pip3 install apache-airflow
 sudo pip3 uninstall sqlalchemy -y
-sudo pip3 install 'sqlalchemy < 1.4.0' apache-airflow attrdict mlflow
+sudo pip3 install 'sqlalchemy < 1.4.0' apache-airflow attrdict
 
 # assign permission
 sudo chmod +x /usr/local/bin/docker-compose
@@ -14,10 +18,10 @@ newgrp docker
 sudo systemctl restart docker
 
 # set path
-export AIRFLOW_HOME=/home/ec2-user/airflow
+export AIRFLOW_HOME=/root/airflow
 
 # update sqlite
-sudo yum -y install wget tar gzip gcc make expect
+sudo apt-get -y install wget tar gzip gcc make expect
 wget https://www.sqlite.org/src/tarball/sqlite.tar.gz
 tar xzf sqlite.tar.gz
 cd sqlite/
@@ -40,7 +44,7 @@ LIBS="-lm" ./configure --disable-tcl --enable-shared --enable-tempstore=always -
 make
 sudo make install
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-cd ..
+cd /root
 rm -r sqlite sqlite.tar.gz
 
 # pull repo
@@ -53,16 +57,16 @@ mkdir airflow/dags
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
 # create user
-airflow users create --username admin --firstname Peter --lastname Parker --password 1234 --role Admin --email spiderman@superhero.org
+airflow users create --username admin --firstname John --lastname Doe --password 1234 --role Admin --email Johndoe@example.com
 
 # run scheldurer
 airflow scheduler
 
 # run airflow gui server
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-airflow webserver -p 6006
+airflow webserver -p 8080
 
 # for docker
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-cd serving
-docker-compose up
+#cd serving
+#source service-init.sh
