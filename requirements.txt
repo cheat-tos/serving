@@ -1,0 +1,8 @@
+easydict==1.9
+numpy==1.19.5
+pandas==1.2.4
+sklearn==0.0
+torch==1.6.0
+transformers==4.6.1
+bentoml==0.12.1
+boto3==1.17.78

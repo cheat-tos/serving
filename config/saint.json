@@ -2,7 +2,7 @@
     "seed" : 42,
     "device" : "cpu",
 
-    "data_dir" : "/opt/ml/input/data/train_dataset",
+    "data_dir" : "data/",
     "asset_dir" : "asset/",
     "file_name" : "train_data.csv",
     "model_dir" : "models/",
@@ -13,12 +13,12 @@
     "max_seq_len" : 20,
     "num_workers" : 1,
 
-    "hidden_dim" : 64,
-    "n_layers" : 2,
-    "n_heads" : 2,
+    "hidden_dim" : 256,
+    "n_layers" : 12,
+    "n_heads" : 8,
     "drop_out" : 0.2,
 
-    "n_epochs" : 20,
+    "n_epochs" : 50,
     "batch_size" : 64,
     "lr" : 0.0001,
     "clip_grad" : 10,
@@ -26,7 +26,13 @@
 
     "log_steps" : 50,
 
-    "model" : "lstm",
+    "model" : "saint",
     "optimizer" : "adam",
-    "scheduler" : "plateau"
+    "scheduler" : "plateau",
+
+    "emb_size" : 100,
+    "scheduler_step" : 5,
+    "max_lr" : 1e-4,
+    "min_lr" : 1e-5,
+    "data_id" : "newID"
 }

@@ -1,0 +1,38 @@
+{
+    "seed" : 42,
+    "device" : "cpu",
+
+    "data_dir" : "data/",
+    "asset_dir" : "asset/",
+    "file_name" : "train_data.csv",
+    "model_dir" : "models/",
+    "model_name" : "model.pt",
+    "output_dir" : "output/",
+    "test_file_name" : "test_data.csv",
+
+    "max_seq_len" : 20,
+    "num_workers" : 1,
+
+    "hidden_dim" : 64,
+    "n_layers" : 2,
+    "n_heads" : 2,
+    "drop_out" : 0.2,
+
+    "n_epochs" : 20,
+    "batch_size" : 64,
+    "lr" : 0.0001,
+    "clip_grad" : 10,
+    "patience" : 5,
+
+    "log_steps" : 50,
+
+    "model" : "lstm",
+    "optimizer" : "adam",
+    "scheduler" : "plateau",
+
+    "emb_size" : 100,
+    "scheduler_step" : 5,
+    "max_lr" : 1e-4,
+    "min_lr" : 1e-5,
+    "data_id" : "newID"
+}
