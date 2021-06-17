@@ -1,3 +1,5 @@
+import sys
+
 from flask import Flask, render_template
 from flask import request
 
@@ -14,8 +16,7 @@ def index():
 @app.route('/get_score', methods=['POST'])
 def get_score():
     data = request.json
-    # request to loadbalancer -> reverse server : inference container
-    res = requests.post(f'http://inference:5000/predict', json= data)
+    res = requests.post("http://inference:5000/predict", json= data)
     score = res.text
     score = int(float(score))
     print(score)
