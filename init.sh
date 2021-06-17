@@ -1,11 +1,18 @@
 # THIS IS NCP SERVER SETTING.
 # YOU SHOULD CHANGE DETAILS IF YOU WANT TO USE THIS IN OTHER CLOUD SERVICES.
 
+# Current working directory - root
+cd /root
+
+sudo apt update
+
 # install packages
 sudo apt-get -y install git
 sudo apt-get -y install docker
 sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" \
             -o /usr/local/bin/docker-compose
+
+sudo apt install python3-pip -y
 
 sudo pip3 install apache-airflow
 sudo pip3 uninstall sqlalchemy -y
@@ -48,7 +55,7 @@ cd /root
 rm -r sqlite sqlite.tar.gz
 
 # pull repo
-git clone https://github.com/cheat-tos/serving.git
+# git clone https://github.com/cheat-tos/serving.git
 
 # init
 airflow db init
@@ -59,14 +66,23 @@ export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 # create user
 airflow users create --username admin --firstname John --lastname Doe --password 1234 --role Admin --email Johndoe@example.com
 
+# copy custom dag
+cp
+
 # run scheldurer
-airflow scheduler
+airflow scheduler -D \
+  --pid /root/airflow/airflow-scheduler.pid \
+  --stdout /root/airflow/airflow-scheduler.out \
+  --stderr /root/airflow/airflow-scheduler.err
 
 # run airflow gui server
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-airflow webserver -p 8080
+airflow webserver -p 8080 -D \
+  --pid /root/airflow/airflow-webserver.pid \
+  --stdout /root/airflow/airflow-webserver.out \
+  --stderr /root/airflow/airflow-webserver.err
 
 # for docker
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-#cd serving
+cd serving
 #source service-init.sh

@@ -39,7 +39,7 @@ dataload = BashOperator(
 
 update_data = BashOperator(
     # 새로운 데이터 추가하여 s3에 업로드하기
-    task_id='retrain',
+    task_id='upload_data',
     bash_command=f'python {WORKING_DIRECTORY}/upload_s3.py',
     dag=dag,
 )
