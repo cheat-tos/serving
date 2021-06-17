@@ -67,7 +67,7 @@ export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 airflow users create --username admin --firstname John --lastname Doe --password 1234 --role Admin --email Johndoe@example.com
 
 # copy custom dag
-cp
+cp /root/serving/dag_iter.py /root/airflow/dags
 
 # run scheldurer
 airflow scheduler -D \
