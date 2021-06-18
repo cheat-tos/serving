@@ -1,24 +1,24 @@
 {
     "seed" : 42,
-    "device" : "cpu",
+    "device" : "cuda",
 
-    "data_dir" : "/root/serving/data/",
-    "asset_dir" : "/root/serving/asset/",
+    "data_dir" : "/opt/ml/serving/data/",
+    "asset_dir" : "/opt/ml/serving/asset/",
     "file_name" : "train_data.csv",
-    "model_dir" : "/root/serving/models/",
+    "model_dir" : "/opt/ml/serving/models/",
     "model_name" : "model.pt",
-    "output_dir" : "/root/serving/output/",
+    "output_dir" : "/opt/ml/serving/output/",
     "test_file_name" : "test_data.csv",
 
     "max_seq_len" : 20,
-    "num_workers" : 1,
+    "num_workers" : 0,
 
     "hidden_dim" : 64,
     "n_layers" : 2,
     "n_heads" : 2,
     "drop_out" : 0.2,
 
-    "n_epochs" : 20,
+    "n_epochs" : 1,
     "batch_size" : 64,
     "lr" : 0.0001,
     "clip_grad" : 10,

@@ -5,7 +5,7 @@ from airflow.operators.bash import BashOperator
 from airflow.utils.dates import days_ago
 
 
-WORKING_DIRECTORY = "serving"
+WORKING_DIRECTORY = "/root/serving"
 CONFIG = "lstm"
 
 
@@ -33,41 +33,15 @@ dag = DAG(
 load_data = BashOperator(
     # 새로운 데이터 받아오기
     task_id='load_data',
-    bash_command=f'python3 /root/{WORKING_DIRECTORY}/data/load_data.py', # 임의
+    bash_command=f'python3 {WORKING_DIRECTORY}/data/load_data.py', # 임의
     dag=dag,
 )
 
 update_data = BashOperator(
     # 새로운 데이터 추가하여 s3에 업로드하기
     task_id='update_data',
-    bash_command=f'python3 /root/{WORKING_DIRECTORY}/data/update_data.py',
+    bash_command=f'python3 {WORKING_DIRECTORY}/data/update_data.py',
     dag=dag,
 )
 
-retrain = BashOperator(
-    # 재학습
-    task_id='retrain',
-    bash_command=f'python3 /root/{WORKING_DIRECTORY}/train.py --config {CONFIG}',
-    dag=dag,
-)
-
-packing = BashOperator(
-    # 패키징
-    task_id='packing',
-    bash_command=f'python3 /root/{WORKING_DIRECTORY}/packer.py',
-    dag=dag
-)
-
-rolling_update = BashOperator(
-    # 기존의 컨테이너 내리기
-    task_id='rolling_update',
-    bash_command=f'docker service update \
-      --update-parallelism 1 \
-      --update-delay 10s \
-      --image kpic5014/bento-dkt:latest \
-      --detach=false \
-      dkt-service_client',
-    dag=dag
-)
-
-load_data >> update_data >> retrain >> packing >> rolling_update
+load_data >> update_data >> rolling_update
