@@ -4,9 +4,7 @@
 sudo apt update
 sudo apt-get update
 
-sudo apt install python3-pip -y
-
-sudo pip3 install -r requirements.txt
+sudo pip install -r requirements.txt
 
 # YOU SHOULD SET AWS CONFIGURE FOR LOAD AND UPDATE DATA FROM S3 BUCKET BY NEXT LINE
 aws configure
@@ -31,7 +29,7 @@ newgrp docker
 sudo systemctl restart docker
 
 # set path
-export AIRFLOW_HOME=/root/airflow
+export AIRFLOW_HOME=/opt/ml/airflow
 
 # update sqlite
 sudo apt-get -y install wget tar gzip gcc make expect
@@ -57,7 +55,7 @@ LIBS="-lm" ./configure --disable-tcl --enable-shared --enable-tempstore=always -
 make
 sudo make install
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-cd /root
+cd /opt/ml
 rm -r sqlite sqlite.tar.gz
 
 # pull repo
@@ -75,22 +73,20 @@ export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 airflow users create --username admin --firstname John --lastname Doe --password 1234 --role Admin --email Johndoe@example.com
 
 # copy custom dag
-cp /root/serving/dag_iter.py /root/airflow/dags/
+cp /opt/ml/serving/*.py /opt/ml/airflow/dags/
 
 # run scheldurer
 airflow scheduler -D \
-  --pid /root/airflow/airflow-scheduler.pid \
-  --stdout /root/airflow/airflow-scheduler.out \
-  --stderr /root/airflow/airflow-scheduler.err
+  --pid /opt/ml/airflow/airflow-scheduler.pid \
+  --stdout /opt/ml/airflow/airflow-scheduler.out \
+  --stderr /opt/ml/airflow/airflow-scheduler.err
 
 # run airflow gui server
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-airflow webserver -p 8080 -D \
-  --pid /root/airflow/airflow-webserver.pid \
-  --stdout /root/airflow/airflow-webserver.out \
-  --stderr /root/airflow/airflow-webserver.err
+airflow webserver -p 6006 -D \
+  --pid /opt/ml/airflow/airflow-webserver.pid \
+  --stdout /opt/ml/airflow/airflow-webserver.out \
+  --stderr /opt/ml/airflow/airflow-webserver.err
 
-# for docker
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-cd /root/serving
-source service-init.sh
+cd /opt/ml/serving
