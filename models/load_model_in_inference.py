@@ -8,10 +8,10 @@ key = 'models/model.pt'
 
 print('#'*30)
 print(f"CURRENT WORKING DIRECTORY : {os.path.dirname(os.path.realpath(__file__))}")
-print(f"UPLOAD DATA TO {bucket}/{key} FROM {file_name} ...")
+print(f"LOAD DATA FROM {bucket}/{key} TO {file_name} ...")
 
 s3 = boto3.client('s3')
-res = s3.download_file(file_name, bucket, key)
+res = s3.download_file(bucket, key, file_name)
 
-print(f"MODEL UPLOADED : [{file_name}]")
+print(f"MODEL LOADED : [{file_name}]")
 print('#'*30)
