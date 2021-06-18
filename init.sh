@@ -1,22 +1,23 @@
 # THIS IS NCP SERVER SETTING.
 # YOU SHOULD CHANGE DETAILS IF YOU WANT TO USE THIS IN OTHER CLOUD SERVICES.
 
+sudo apt update
+
+sudo apt install python3-pip -y
+
+sudo pip3 install -r requirements.txt
+#sudo pip3 install apache-airflow
+#sudo pip3 uninstall sqlalchemy -y
+#sudo pip3 install 'sqlalchemy < 1.4.0' apache-airflow attrdict
+
 # Current working directory - root
 cd /root
-
-sudo apt update
 
 # install packages
 sudo apt-get -y install git
 sudo apt-get -y install docker
 sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" \
             -o /usr/local/bin/docker-compose
-
-sudo apt install python3-pip -y
-
-sudo pip3 install apache-airflow
-sudo pip3 uninstall sqlalchemy -y
-sudo pip3 install 'sqlalchemy < 1.4.0' apache-airflow attrdict
 
 # assign permission
 sudo chmod +x /usr/local/bin/docker-compose

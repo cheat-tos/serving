@@ -6,3 +6,6 @@ torch==1.6.0
 transformers==4.6.1
 bentoml==0.12.1
 boto3==1.17.78
+apache-airflow
+sqlalchemy < 1.4.0
+attrdict
