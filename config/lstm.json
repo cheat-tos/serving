@@ -4,11 +4,11 @@
 
     "data_dir" : "data/",
     "asset_dir" : "asset/",
-    "file_name" : "train_data.csv",
+    "file_name" : "data/train_data.csv",
     "model_dir" : "models/",
     "model_name" : "model.pt",
     "output_dir" : "output/",
-    "test_file_name" : "test_data.csv",
+    "test_file_name" : "data/test_data.csv",
 
     "max_seq_len" : 20,
     "num_workers" : 1,

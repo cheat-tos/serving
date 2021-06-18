@@ -1,6 +1,6 @@
+#! /bin/bash
 # THIS IS NCP SERVER SETTING.
 # YOU SHOULD CHANGE DETAILS IF YOU WANT TO USE THIS IN OTHER CLOUD SERVICES.
-
 sudo apt update
 
 sudo apt install python3-pip -y
@@ -9,6 +9,9 @@ sudo pip3 install -r requirements.txt
 #sudo pip3 install apache-airflow
 #sudo pip3 uninstall sqlalchemy -y
 #sudo pip3 install 'sqlalchemy < 1.4.0' apache-airflow attrdict
+
+# YOU SHOULD SET AWS CONFIGURE FOR LOAD AND UPDATE DATA FROM S3 BUCKET BY NEXT LINE
+aws configure
 
 # Current working directory - root
 cd /root
