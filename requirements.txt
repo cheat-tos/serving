@@ -1,6 +1,6 @@
 easydict==1.9
 numpy==1.19.5
-pandas==1.2.4
+pandas==1.1.5
 sklearn==0.0
 torch==1.6.0
 transformers==4.6.1
