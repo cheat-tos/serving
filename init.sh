@@ -2,13 +2,11 @@
 # THIS IS NCP SERVER SETTING.
 # YOU SHOULD CHANGE DETAILS IF YOU WANT TO USE THIS IN OTHER CLOUD SERVICES.
 sudo apt update
+sudo apt-get update
 
 sudo apt install python3-pip -y
 
 sudo pip3 install -r requirements.txt
-#sudo pip3 install apache-airflow
-#sudo pip3 uninstall sqlalchemy -y
-#sudo pip3 install 'sqlalchemy < 1.4.0' apache-airflow attrdict
 
 # YOU SHOULD SET AWS CONFIGURE FOR LOAD AND UPDATE DATA FROM S3 BUCKET BY NEXT LINE
 aws configure
@@ -17,10 +15,14 @@ aws configure
 cd /root
 
 # install packages
-sudo apt-get -y install git
-sudo apt-get -y install docker
-sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" \
-            -o /usr/local/bin/docker-compose
+sudo apt-get install git -y
+sudo apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+sudo apt-get install docker-ce docker-ce-cli containerd.io -y
 
 # assign permission
 sudo chmod +x /usr/local/bin/docker-compose
