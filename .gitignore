@@ -286,5 +286,4 @@ pip-selfcheck.json
 input/
 wandb/
 wandb
-models
-models/
+models/*.pt

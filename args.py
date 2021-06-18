@@ -10,7 +10,7 @@ def parse_args(mode='train'):
     args_config = parser.parse_args()
 
     args = EasyDict()
-    with open(f'/root/serving/config/{args_config.config}.json', 'r') as f:
+    with open(f'/opt/ml/serving/config/{args_config.config}.json', 'r') as f:
         args.update(json.load(f))
 
     args['config'] = args_config.config
