@@ -47,7 +47,7 @@ update_data = BashOperator(
 retrain = BashOperator(
     # 재학습
     task_id='retrain',
-    bash_command=f'python3 /root/{WORKING_DIRECTORY}/dkt/train.py --config {CONFIG}',
+    bash_command=f'python3 /root/{WORKING_DIRECTORY}/train.py --config {CONFIG}',
     dag=dag,
 )
 
