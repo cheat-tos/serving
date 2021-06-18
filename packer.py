@@ -11,6 +11,12 @@ from dkt.trainer import get_model
 # get argument from config.json
 args = parse_args(mode='train')
 
+# inference server setting
+args.data_dir = "/root/serving/data/"
+args.asset_dir = "/root/serving/asset/"
+args.model_dir = "/root/serving/models/"
+args.output_dir = "/root/serving/output/"
+
 # add additional arguments
 args.cate_cols = ['assessmentItemID', 'testId', 'KnowledgeTag']
 args.cont_cols = []
