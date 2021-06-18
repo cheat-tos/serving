@@ -12,6 +12,7 @@ from dkt.trainer import get_model
 args = parse_args(mode='train')
 
 # inference server setting
+args.device = "cpu"
 args.data_dir = "/root/serving/data/"
 args.asset_dir = "/root/serving/asset/"
 args.model_dir = "/root/serving/models/"
@@ -42,12 +43,12 @@ for col in args.cate_cols:
 
 # get trained model
 model_path = os.path.join(args.model_dir, 'model.pt')
-load_state = torch.load(model_path)
+load_state = torch.load(model_path, map_location=torch.device(args.device))
 model = get_model(args)
 model.load_state_dict(load_state['state_dict'], strict=True)
 
 # get test data
-test = pd.read_csv("questions.csv")
+test = pd.read_csv("/root/serving/questions.csv")
 
 # packing
 bento_dkt = PytorchDKT()
