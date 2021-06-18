@@ -2,7 +2,7 @@ import torch
 import pandas as pd
 import numpy as np
 
-import labeled_dataloader as dataloader
+from dkt import dataloader
 
 
 def process_batch(batch, args):
