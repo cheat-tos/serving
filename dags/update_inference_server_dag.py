@@ -4,6 +4,7 @@ from airflow.operators.bash import BashOperator
 
 from airflow.utils.dates import days_ago
 
+# THIS DAG IS FOR INFERENCE SERVER.
 WORKING_DIRECTORY = "/root/serving"
 CONFIG = "lstm"
 
@@ -23,8 +24,9 @@ dag = DAG(
     default_args=default_args,
     description='Replace inference server with recent image',
     start_date=days_ago(0),
+    schedule_interval=None, # externally triggered
     # schedule_interval='0 2 * * * *', # daily update at 2
-    is_paused_upon_creation=False,
+    is_paused_upon_creation=True,
     catchup = False,
     max_active_runs=1
 )

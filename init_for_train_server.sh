@@ -73,9 +73,12 @@ export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 airflow users create --username admin --firstname John --lastname Doe --password 1234 --role Admin --email Johndoe@example.com
 
 # copy custom dag
-cp /opt/ml/serving/*.py /opt/ml/airflow/dags/
+cp /opt/ml/serving/dags/*.py /opt/ml/airflow/dags/
 
 # run scheldurer
+sudo rm $AIRFLOW_HOME \
+  airflow-scheduler.err airflow-scheduler.pid airflow-scheduler.out
+
 airflow scheduler -D \
   --pid /opt/ml/airflow/airflow-scheduler.pid \
   --stdout /opt/ml/airflow/airflow-scheduler.out \

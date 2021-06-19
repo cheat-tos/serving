@@ -75,9 +75,9 @@ export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 airflow users create --username admin --firstname John --lastname Doe --password 1234 --role Admin --email Johndoe@example.com
 
 # copy custom dag
-cp /root/serving/dag_iter.py /root/airflow/dags/
+cp -r /root/serving/dags/*.py /root/airflow/dags/
 
-# run scheldurer
+# run scheduler
 airflow scheduler -D \
   --pid /root/airflow/airflow-scheduler.pid \
   --stdout /root/airflow/airflow-scheduler.out \
@@ -85,7 +85,7 @@ airflow scheduler -D \
 
 # run airflow gui server
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-airflow webserver -p 6006 -D \
+airflow webserver -p 8080 -D \
   --pid /root/airflow/airflow-webserver.pid \
   --stdout /root/airflow/airflow-webserver.out \
   --stderr /root/airflow/airflow-webserver.err
