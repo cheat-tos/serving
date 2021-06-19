@@ -22,6 +22,11 @@ services:
     image: kpic5014/bento-dkt
     ports:
       - "5000:5000"
+    volumes:
+      - /root/serving/data:/home/bentoml/data
+      - /root/serving/asset:/home/bentoml/asset
+      - /root/serving/model:/home/bentoml/model
+      - /root/serving/output:/home/bentoml/output
     networks:
       - mentos
 

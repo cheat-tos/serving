@@ -62,7 +62,7 @@ rolling_update = BashOperator(
       --update-delay 10s \
       --image kpic5014/bento-dkt:latest \
       --detach=false \
-      dkt-service_client',
+      dkt-service_inference',
     dag=dag
 )
 

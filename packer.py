@@ -13,10 +13,10 @@ args = parse_args(mode='train')
 
 # inference server setting
 args.device = "cpu"
-args.data_dir = "/root/serving/data/"
-args.asset_dir = "/root/serving/asset/"
-args.model_dir = "/root/serving/models/"
-args.output_dir = "/root/serving/output/"
+args.data_dir = "/home/bentoml/data/" # map to "/root/serving/data/"
+args.asset_dir = "/home/bentoml/asset/"# map to "/root/serving/asset/"
+args.model_dir = "/home/bentoml/model/" # map to "/root/serving/model/"
+args.output_dir = "/home/bentoml/output/" # map to "/root/serving/output/"
 
 # add additional arguments
 args.cate_cols = ['assessmentItemID', 'testId', 'KnowledgeTag']
