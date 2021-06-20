@@ -93,4 +93,4 @@ airflow webserver -p 8080 -D \
 # for docker
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 cd /root/serving
-source service-init.sh
+source docker-manual/service-init.sh

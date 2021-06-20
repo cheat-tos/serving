@@ -18,7 +18,7 @@
     "n_heads" : 2,
     "drop_out" : 0.2,
 
-    "n_epochs" : 1,
+    "n_epochs" : 20,
     "batch_size" : 64,
     "lr" : 0.0001,
     "clip_grad" : 10,
