@@ -42,7 +42,7 @@ for col in args.cate_cols:
     args.n_cols[col] = len(le[col])
 
 # get trained model
-model_path = os.path.join(args.model_dir, args.model)
+model_path = os.path.join(args.model_dir, 'model.pt')
 load_state = torch.load(model_path, map_location=torch.device(args.device))
 model = get_model(args)
 model.load_state_dict(load_state['state_dict'], strict=True)

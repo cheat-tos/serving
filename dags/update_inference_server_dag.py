@@ -41,7 +41,7 @@ load_model = BashOperator(
 packing = BashOperator(
     # Bento Service 패키징
     task_id='packing',
-    bash_command=f'python3 {WORKING_DIRECTORY}/packer.py',
+    bash_command=f'python3 {WORKING_DIRECTORY}/packer.py --config saint',
     dag=dag
 )
 
