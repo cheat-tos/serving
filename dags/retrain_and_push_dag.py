@@ -39,7 +39,7 @@ load_data = BashOperator(
 retrain = BashOperator(
     # 재학습
     task_id='retrain',
-    bash_command=f'python3 {WORKING_DIRECTORY}/train.py',
+    bash_command=f'python3 {WORKING_DIRECTORY}/train.py --config saint',
     dag=dag
 )
 

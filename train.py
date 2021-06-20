@@ -16,7 +16,7 @@ def main(args):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     args.device = device
 
-    print(f"MODEL : {args.config}")
+    print(f"MODEL : {args.config} - {args.device}")
 
     preprocess = Preprocess(args)
     preprocess.load_train_data(args.file_name)

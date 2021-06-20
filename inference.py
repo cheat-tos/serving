@@ -116,7 +116,7 @@ def inference(data, test, model, le, args):
         preds = preds[:,-1]
 
         if args.device == 'cuda':
-            preds = preds.to('cpu').detach().numpy()
+            preds = preds.to('cuda').detach().numpy()
         else: # cpu
             preds = preds.detach().numpy()
             
