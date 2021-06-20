@@ -237,6 +237,8 @@ def get_loaders(args, train, valid):
     pin_memory = True
     train_loader, valid_loader = None, None
 
+    args.num_workers=0
+
     if train is not None:
         trainset = DKTDataset(train, args)
         train_loader = torch.utils.data.DataLoader(trainset, num_workers=args.num_workers, shuffle=True,

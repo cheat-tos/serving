@@ -66,6 +66,7 @@ rm -r sqlite sqlite.tar.gz
 # init
 airflow db init
 sed -i 's/load_examples = True/load_examples = False/g' airflow/airflow.cfg
+sed -i 's/killed_task_cleanup_time = 60/killed_task_cleanup_time = 648000/g' airflow/airflow.cfg
 mkdir airflow/dags
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
