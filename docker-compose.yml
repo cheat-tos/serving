@@ -1,0 +1,33 @@
+version: "3.7"
+
+services:
+
+  client:
+    image: kpic5014/dkt-client-flask
+    ports:
+      - "80:6006"
+    networks:
+      - mentos
+
+  inference:
+    # deploy option for container orchestration(Docker Swarm)
+    deploy:
+      replicas: 3 # CUSTOM IT!
+      resources:
+        limits:
+          cpus: "0.3" # CUSTOM IT!
+          memory: "300M" # CUSTOM IT!
+      restart_policy:
+        condition: on-failure
+    image: kpic5014/bento-dkt
+    ports:
+      - "5000:5000"
+    volumes:
+      - /root/serving/data:/home/bentoml/data
+      - /root/serving/asset:/home/bentoml/asset
+    networks:
+      - mentos
+
+networks:
+  mentos:
+    driver: overlay

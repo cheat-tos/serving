@@ -284,3 +284,6 @@ pip-selfcheck.json
 
 .input/
 input/
+wandb/
+wandb
+models/*.pt
