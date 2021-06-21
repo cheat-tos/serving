@@ -1,5 +1,5 @@
 ## 📚 Deep Knowledge Tracing(DKT)
-**딥러닝을 이용한 지식 상태 추적(Deep Learning + Knowledge Tracing)**으로 특정 시험을 통해 학생의 지식 상태를 파악하고 이를 기반으로 다음 문제를 맞출지 예측하는 태스크입니다.
+**딥러닝을 이용한 지식 상태 추적**(Deep Learning + Knowledge Tracing)으로 특정 시험을 통해 학생의 지식 상태를 파악하고 이를 기반으로 다음 문제를 맞출지 예측하는 태스크입니다.
 학습과 망각을 통해 지식 상태는 계속 변화하며 추가되는 문제 풀이 정보로 지식 상태를 지속적으로 추적해야 합니다.
 
 <br>
@@ -7,7 +7,8 @@
 ## 📝 Repository Summary
 
 이 레포지토리는 아래와 같은 아키텍쳐를 구성하기 위한 코드로 이루어져있습니다.
-먼저 이 아키텍쳐는 두 개의 서버를 전제한 상태로 구성되었습니다.
+먼저 이 아키텍쳐는 두 개의 서버를 전제한 상태로 구성되었습니다.  
+
 **1. Inference용 서버 : Naver Cloud Platform Server**
 - 유저의 Request를 받아 Inference를 수행하고 결과를 렌더링하거나, Model file을 packing하여 새로운 Docker Image로 만드는 작업을 수행합니다.  
 
