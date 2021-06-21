@@ -15,8 +15,8 @@ services:
       replicas: 3 # CUSTOM IT!
       resources:
         limits:
-          cpus: "0.3" # CUSTOM IT!
-          memory: "300M" # CUSTOM IT!
+          cpus: "1" # CUSTOM IT!
+          memory: "1G" # CUSTOM IT!
       restart_policy:
         condition: on-failure
     image: kpic5014/bento-dkt

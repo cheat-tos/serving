@@ -51,11 +51,11 @@ model.load_state_dict(load_state['state_dict'], strict=True)
 # get test data
 test = pd.read_csv("/root/serving/questions.csv")
 
-# # for container-host volume mapping
-# args.data_dir = "/home/bentoml/data/" # map to "/root/serving/data/"
-# args.asset_dir = "/home/bentoml/asset/"# map to "/root/serving/asset/"
-# args.model_dir = "/home/bentoml/models/" # map to "/root/serving/models/"
-# args.output_dir = "/home/bentoml/output/" # map to "/root/serving/output/"
+# for container-host volume mapping
+args.data_dir = "/home/bentoml/data/" # map to "/root/serving/data/"
+args.asset_dir = "/home/bentoml/asset/"# map to "/root/serving/asset/"
+args.model_dir = "/home/bentoml/models/" # map to "/root/serving/models/"
+args.output_dir = "/home/bentoml/output/" # map to "/root/serving/output/"
 
 # packing
 bento_dkt = PytorchDKT()
